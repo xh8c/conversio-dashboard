@@ -372,13 +372,13 @@ function Chatbot({ userId }) {
     setLoading(false);
   }
 
-  const scriptTag = `<script>
+const scriptTag = `<script>
 window.chatbotConfig = {
   userId: "${userId}",
-  apiUrl: "https://your-backend.railway.app",
+  apiUrl: "web-production-f2d291.up.railway.app",
 };
 </script>
-<script src="https://your-dashboard.vercel.app/widget.js"></script>`;
+<script src="https://conversio-dashboard.vercel.app/widget.js"></script>`;
 
   return (
     <div className="flex flex-col gap-5">
