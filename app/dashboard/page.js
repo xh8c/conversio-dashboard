@@ -360,7 +360,7 @@ function Chatbot({ userId }) {
     if (!url) return;
     setLoading(true); setStatus(null);
     try {
-      const res = await fetch("http://127.0.0.1:8000/train", {
+      const res = await fetch("web-production-f2d291.up.railway.app", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, url }),
       });
