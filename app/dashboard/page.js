@@ -364,8 +364,9 @@ function Chatbot({ userId }) {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, url }),
       });
-      const data = await res.json();
-      setStatus({ success: true, msg: `Scraped ${data.pages_scraped} pages — ${data.chunks_stored} chunks stored` });
+const data = await res.json();
+      console.log("Train response:", data);
+      setStatus({ success: true, msg: data.pages_scraped ? `Scraped ${data.pages_scraped} pages — ${data.chunks_stored} chunks stored` : "Training complete!" });
     } catch {
       setStatus({ success: false, msg: "Backend unreachable. Make sure it's running on port 8000." });
     }
