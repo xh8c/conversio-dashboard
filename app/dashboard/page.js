@@ -360,7 +360,7 @@ function Chatbot({ userId }) {
     if (!url) return;
     setLoading(true); setStatus(null);
     try {
-      const res = await fetch("https://web-production-f2d291.up.railway.app/", {
+      const res = await fetch("https://web-production-f2d291.up.railway.app/train", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, url }),
       });
@@ -376,7 +376,7 @@ const data = await res.json();
 const scriptTag = `<script>
 window.chatbotConfig = {
   userId: "${userId}",
-  apiUrl: "web-production-f2d291.up.railway.app",
+  apiUrl: "https://web-production-f2d291.up.railway.app",
 };
 </script>
 <script src="https://conversio-dashboard.vercel.app/widget.js"></script>`;
