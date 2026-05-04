@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>North Medical Spa</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Georgia', serif; background: #fdfaf7; color: #1a1a1a; }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 60px; border-bottom: 1px solid #e8e0d5;
+      background: white;
+    }
+    nav .logo { font-size: 20px; font-weight: bold; letter-spacing: 2px; color: #2d2d2d; }
+    nav ul { list-style: none; display: flex; gap: 32px; }
+    nav ul li a { text-decoration: none; color: #666; font-size: 14px; letter-spacing: 0.5px; }
+    .hero {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center;
+      padding: 100px 60px;
+      background: linear-gradient(135deg, #fdfaf7 0%, #f5ede4 100%);
+    }
+    .hero h1 { font-size: 52px; font-weight: 300; letter-spacing: -1px; color: #1a1a1a; margin-bottom: 20px; }
+    .hero h1 span { font-style: italic; color: #c9956b; }
+    .hero p { font-size: 18px; color: #777; max-width: 500px; line-height: 1.7; margin-bottom: 36px; }
+    .hero-btn {
+      padding: 14px 36px; background: #2d2d2d; color: white;
+      border: none; font-size: 13px; letter-spacing: 2px;
+      cursor: pointer; text-transform: uppercase;
+    }
+    .services {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: #e8e0d5; margin: 60px 60px;
+    }
+    .service-card {
+      background: white; padding: 40px 32px;
+      text-align: center;
+    }
+    .service-card h3 { font-size: 16px; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
+    .service-card p { font-size: 14px; color: #888; line-height: 1.7; }
+    .service-icon { font-size: 32px; margin-bottom: 16px; }
+    .about {
+      display: flex; align-items: center; gap: 60px;
+      padding: 80px 60px; background: #f5ede4;
+    }
+    .about-text h2 { font-size: 36px; font-weight: 300; margin-bottom: 20px; }
+    .about-text p { font-size: 15px; color: #666; line-height: 1.8; max-width: 500px; }
+    footer {
+      text-align: center; padding: 40px;
+      background: #2d2d2d; color: #999; font-size: 13px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">NORTH MED SPA</div>
+    <ul>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Locations</a></li>
+      <li><a href="#">Book</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <h1>Redefine Your <span>Natural Beauty</span></h1>
+    <p>Expert aesthetic treatments tailored to you. Experience luxury medical spa services at three convenient Ontario locations.</p>
+    <button class="hero-btn">Book a Consultation</button>
+  </div>
+
+  <div class="services">
+    <div class="service-card">
+      <div class="service-icon">✦</div>
+      <h3>HydraFacial</h3>
+      <p>Deep cleansing and hydration treatment for radiant, glowing skin.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">◈</div>
+      <h3>Microneedling</h3>
+      <p>Stimulate collagen production for firmer, smoother skin texture.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">❋</div>
+      <h3>Dermal Fillers</h3>
+      <p>Restore volume and contour with natural-looking results.</p>
+    </div>
+  </div>
+
+  <div class="about">
+    <div class="about-text">
+      <h2>Three Locations Across Ontario</h2>
+      <p>Visit us in Toronto, Oakville, or Collingwood. Our team of expert providers delivers personalized treatments in a sophisticated, welcoming environment.</p>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 NORTH MEDICAL SPA — ALL RIGHTS RESERVED
+  </footer>
+
+  <!-- Conversio Chatbot -->
+  <script>
+    window.chatbotConfig = {
+      userId: "681f5901-762d-4f43-9d89-476576497b85",
+      apiUrl: "http://127.0.0.1:8000",
+    };
+  </script>
+  <script src="/widget.js"></script>
+
+</body>
+</html>
