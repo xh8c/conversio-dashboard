@@ -282,7 +282,7 @@ function playSound(type) {
     #cb-messages::-webkit-scrollbar-track { background: transparent; }
     #cb-messages::-webkit-scrollbar-thumb { background: rgba(${rgb},0.3); border-radius: 4px; }
 
-    .cb-row { display: flex; align-items: flex-end; gap: 8px; }
+.cb-row { display: flex; align-items: flex-end; gap: 8px; width: 100%; }
     .cb-row.user { justify-content: flex-end; }
     .cb-row.bot { justify-content: flex-start; }
 
@@ -295,9 +295,10 @@ function playSound(type) {
     }
     .cb-bot-icon svg { width: 14px; height: 14px; }
 
-    .cb-msg {
-      max-width: 80%; padding: 12px 16px;
-      font-size: 13.5px; line-height: 1.65; font-weight: 400;
+.cb-msg {
+      max-width: 78%; padding: 11px 15px;
+      font-size: 13px; line-height: 1.6; font-weight: 400;
+      word-wrap: break-word; word-break: break-word; overflow-wrap: break-word;
     }
     .cb-msg.bot { border-radius: 18px 18px 18px 4px; }
     .cb-msg.user {
