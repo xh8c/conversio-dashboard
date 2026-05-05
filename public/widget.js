@@ -404,7 +404,7 @@ bubble.innerHTML = `<span id="cb-bubble-icon">${ICONS.chat}</span><span id="cb-b
       <button id="cb-theme-toggle" title="Toggle theme">🌙</button>
     </div>
     <div id="cb-messages"></div>
-    <div id="cb-faq-chips" style="display:none;padding:0 12px 12px;display:flex;flex-wrap:wrap;gap:6px;"></div>
+    <div id="cb-faq-chips" style="display:none;padding:0 12px 12px;flex-wrap:wrap;gap:6px;"></div>
 <div id="cb-input-area" style="display:flex">
       <input id="cb-input" type="text" placeholder="Ask me anything..." />
       <button id="cb-send">${ICONS.send}</button>
