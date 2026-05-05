@@ -28,6 +28,7 @@
       collectName: remoteSettings.collectName ?? window.chatbotConfig?.collectName ?? true,
       collectEmail: remoteSettings.collectEmail ?? window.chatbotConfig?.collectEmail ?? true,
       logoUrl: remoteSettings.logoUrl || window.chatbotConfig?.logoUrl || "",
+      faqButtons: remoteSettings.faqButtons || window.chatbotConfig?.faqButtons || [],
     };
 
     let isOpen = false;
