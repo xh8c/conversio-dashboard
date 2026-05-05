@@ -456,19 +456,23 @@ function addMessage(text, sender) {
 }
 
 function addTyping() {
-    const msgs = document.getElementById("cb-messages");
-    const row = document.createElement("div");
-    row.id = "cb-typing-row";
-    const bg = theme === "dark" ? "linear-gradient(145deg, #1e1e30, #181828)" : "#ffffff";
-    const shadow = theme === "dark" ? "0 4px 20px rgba(0,0,0,0.3)" : "0 4px 20px rgba(0,0,0,0.08)";
-    row.innerHTML = `<div class="cb-bot-icon">${ICONS.bot}</div><div id="cb-typing" style="background:${bg};box-shadow:${shadow}"><span></span><span></span><span></span></div>`;
-    msgs.appendChild(row);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  function removeTyping() {
-    document.getElementById("cb-typing-row")?.remove();
-  }
+  const msgs = document.getElementById("cb-messages");
+  if (document.getElementById("cb-typing-row")) return;
+  const row = document.createElement("div");
+  row.id = "cb-typing-row";
+  row.style.cssText = "display:flex;align-items:flex-end;gap:8px;padding:4px 0;";
+  const bg = theme === "dark" ? "linear-gradient(145deg, #1e1e30, #181828)" : "#ffffff";
+  const shadow = theme === "dark" ? "0 4px 20px rgba(0,0,0,0.3)" : "0 4px 20px rgba(0,0,0,0.08)";
+  row.innerHTML = `
+    <div class="cb-bot-icon">${ICONS.bot}</div>
+    <div id="cb-typing" style="background:${bg};box-shadow:${shadow};padding:14px 18px;border-radius:18px 18px 18px 4px;display:flex;gap:5px;align-items:center;">
+      <span style="width:6px;height:6px;border-radius:50%;background:${CONFIG.primaryColor};opacity:0.6;animation:cb-dot 1.3s infinite ease-in-out;"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:${CONFIG.primaryColor};opacity:0.6;animation:cb-dot 1.3s infinite ease-in-out;animation-delay:0.18s;"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:${CONFIG.primaryColor};opacity:0.6;animation:cb-dot 1.3s infinite ease-in-out;animation-delay:0.36s;"></span>
+    </div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
 
 // Conversational lead capture state
   let leadStep = 0; // 0=not started, 1=asking name, 2=asking email, 3=done
