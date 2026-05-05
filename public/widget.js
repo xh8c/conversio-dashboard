@@ -14,6 +14,9 @@
       console.log("Using local config fallback");
     }
 
+    console.log("Remote settings:", remoteSettings);
+    console.log("FAQ buttons:", remoteSettings.faqButtons);
+
     const CONFIG = {
       userId: BASE_CONFIG.userId,
       apiUrl: BASE_CONFIG.apiUrl,
