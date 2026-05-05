@@ -494,7 +494,6 @@ function removeTyping() {
 
   async function submitLead() {
     try {
-      // Extract lead info from conversation first
       let extracted = { intent: null, budget: null, timeline: null, urgency: "low" };
       if (conversationHistory.length > 0) {
         try {
@@ -510,7 +509,6 @@ function removeTyping() {
           extracted = await extractRes.json();
         } catch(e) {}
       }
-
       await fetch(`${CONFIG.apiUrl}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -529,6 +527,7 @@ function removeTyping() {
       console.log("Lead submit error:", e);
     }
     leadCaptured = true;
+    setTimeout(() => renderFAQChips(), 500);
   }
 
   async function handleLeadStep(input) {
