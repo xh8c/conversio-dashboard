@@ -485,6 +485,23 @@ function addTyping() {
 
   async function submitLead() {
     try {
+      // Extract lead info from conversation first
+      let extracted = { intent: null, budget: null, timeline: null, urgency: "low" };
+      if (conversationHistory.length > 0) {
+        try {
+          const extractRes = await fetch(`${CONFIG.apiUrl}/extract`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: CONFIG.userId,
+              question: "",
+              conversation_history: conversationHistory,
+            }),
+          });
+          extracted = await extractRes.json();
+        } catch(e) {}
+      }
+
       await fetch(`${CONFIG.apiUrl}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -492,14 +509,16 @@ function addTyping() {
           user_id: CONFIG.userId,
           name: leadData.name,
           email: leadData.email,
-          intent: extractedData.intent,
-          budget: extractedData.budget,
-          timeline: extractedData.timeline,
-          urgency: extractedData.urgency,
+          intent: extracted.intent,
+          budget: extracted.budget,
+          timeline: extracted.timeline,
+          urgency: extracted.urgency || "low",
           conversation: JSON.stringify(conversationHistory),
         }),
       });
-    } catch(e) {}
+    } catch(e) {
+      console.log("Lead submit error:", e);
+    }
     leadCaptured = true;
   }
 
