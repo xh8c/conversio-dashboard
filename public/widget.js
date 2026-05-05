@@ -29,6 +29,9 @@
 
     let isOpen = false;
     let leadCaptured = !(CONFIG.collectName || CONFIG.collectEmail);
+    let conversationHistory = [];
+    let extractedData = { intent: null, budget: null, timeline: null, urgency: "low" };
+    let leadData = { name: "", email: "" };
 
   // Sound system
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -486,7 +489,16 @@ function addTyping() {
       await fetch(`${CONFIG.apiUrl}/lead`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: CONFIG.userId, name: leadData.name, email: leadData.email }),
+        body: JSON.stringify({
+          user_id: CONFIG.userId,
+          name: leadData.name,
+          email: leadData.email,
+          intent: extractedData.intent,
+          budget: extractedData.budget,
+          timeline: extractedData.timeline,
+          urgency: extractedData.urgency,
+          conversation: JSON.stringify(conversationHistory),
+        }),
       });
     } catch(e) {}
     leadCaptured = true;
@@ -544,22 +556,32 @@ if (currentStep === "name") {
     }
 
     // Normal chat
-    addTyping();
-    try {
-      const res = await fetch(`${CONFIG.apiUrl}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: CONFIG.userId,
-          question,
-          bot_name: CONFIG.botName,
-          fallback_message: CONFIG.fallbackMessage,
-        }),
-      });
-      const data = await res.json();
-      removeTyping();
-      addMessage(data.answer, "bot");
-      playSound("receive");
+// Add to history before sending
+conversationHistory.push({ role: "user", content: question });
+
+const res = await fetch(`${CONFIG.apiUrl}/chat`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    user_id: CONFIG.userId,
+    question,
+    bot_name: CONFIG.botName,
+    fallback_message: CONFIG.fallbackMessage,
+    conversation_history: conversationHistory,
+  }),
+});
+const data = await res.json();
+removeTyping();
+addMessage(data.answer, "bot");
+playSound("receive");
+
+// Add bot response to history
+conversationHistory.push({ role: "assistant", content: data.answer });
+
+// Update extracted data silently
+if (data.extracted) {
+  extractedData = { ...extractedData, ...data.extracted };
+}
     } catch {
       removeTyping();
       addMessage("Something went wrong. Please try again.", "bot");
