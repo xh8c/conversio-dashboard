@@ -556,8 +556,10 @@ if (currentStep === "name") {
 
     // Normal chat
 // Add to history before sending
+// Add to history before sending
 conversationHistory.push({ role: "user", content: question });
 
+try {
 const res = await fetch(`${CONFIG.apiUrl}/chat`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
