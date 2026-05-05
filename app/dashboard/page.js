@@ -465,6 +465,7 @@ function Customize({ userId, theme }) {
     fallbackMessage: "I don't have that information, please contact us directly.",
     primaryColor: "#6C63FF", position: "bottom-right",
     collectName: true, collectEmail: true, logoUrl: "",
+    faqButtons: [],
   });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -473,7 +474,7 @@ function Customize({ userId, theme }) {
     async function load() {
       const supabase = createClient();
       const { data } = await supabase.from("chatbot_settings").select("*").eq("user_id", userId).single();
-      if (data) setSettings({ botName: data.bot_name, welcomeMessage: data.welcome_message, fallbackMessage: data.fallback_message, primaryColor: data.primary_color, position: data.position, collectName: data.collect_name, collectEmail: data.collect_email, logoUrl: data.logo_url || "" });
+      if (data) setSettings({ botName: data.bot_name, welcomeMessage: data.welcome_message, fallbackMessage: data.fallback_message, primaryColor: data.primary_color, position: data.position, collectName: data.collect_name, collectEmail: data.collect_email, logoUrl: data.logo_url || "", faqButtons: data.faq_buttons || [] });
       setLoading(false);
     }
     load();
@@ -486,6 +487,7 @@ function Customize({ userId, theme }) {
       fallback_message: settings.fallbackMessage, primary_color: settings.primaryColor,
       position: settings.position, collect_name: settings.collectName,
       collect_email: settings.collectEmail, logo_url: settings.logoUrl,
+      faq_buttons: settings.faqButtons || [],
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
     if (!error) { setSaved(true); setTimeout(() => setSaved(false), 2000); }
@@ -548,6 +550,43 @@ function Customize({ userId, theme }) {
               </div>
             ))}
           </div>
+
+          <div>
+            <label className="text-xs font-mono uppercase tracking-widest mb-3 block" style={{ color: textMuted }}>FAQ buttons</label>
+            <div className="flex flex-col gap-2">
+              {(settings.faqButtons || []).map((btn, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    value={btn}
+                    onChange={(e) => {
+                      const updated = [...settings.faqButtons];
+                      updated[i] = e.target.value;
+                      setSettings({ ...settings, faqButtons: updated });
+                    }}
+                    className="flex-1 rounded-xl px-3 py-2 text-xs font-mono"
+                    style={inputStyle}
+                  />
+                  <button
+                    onClick={() => {
+                      const updated = settings.faqButtons.filter((_, idx) => idx !== i);
+                      setSettings({ ...settings, faqButtons: updated });
+                    }}
+                    className="px-3 py-2 rounded-xl text-xs transition-all"
+                    style={{ color: "#ef4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
+                  >✕</button>
+                </div>
+              ))}
+              {(settings.faqButtons || []).length < 5 && (
+                <button
+                  onClick={() => setSettings({ ...settings, faqButtons: [...(settings.faqButtons || []), ""] })}
+                  className="py-2 rounded-xl text-xs font-mono transition-all"
+                  style={{ color: "#6366f1", background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.15)" }}
+                >+ Add button</button>
+              )}
+            </div>
+            <p className="text-xs font-mono mt-1.5" style={{ color: textSub }}>Auto-generated when you train. Editable here.</p>
+          </div>
+
         </div>
         <button onClick={handleSave}
           className="w-full mt-6 py-3 rounded-xl text-sm font-semibold transition-all"

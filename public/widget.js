@@ -404,6 +404,7 @@ bubble.innerHTML = `<span id="cb-bubble-icon">${ICONS.chat}</span><span id="cb-b
       <button id="cb-theme-toggle" title="Toggle theme">🌙</button>
     </div>
     <div id="cb-messages"></div>
+    <div id="cb-faq-chips" style="display:none;padding:0 12px 12px;display:flex;flex-wrap:wrap;gap:6px;"></div>
 <div id="cb-input-area" style="display:flex">
       <input id="cb-input" type="text" placeholder="Ask me anything..." />
       <button id="cb-send">${ICONS.send}</button>
@@ -574,6 +575,10 @@ if (currentStep === "name") {
     addMessage(question, "user");
     playSound("send");
 
+    // Hide FAQ chips after first message
+    const chips = document.getElementById("cb-faq-chips");
+    if (chips) chips.style.display = "none";
+
     // Handle lead capture flow
     if (!leadCaptured && leadStep < steps.length) {
       await handleLeadStep(question);
@@ -650,16 +655,62 @@ if (currentStep === "name") {
     applyTheme(theme);
   });
 
+// Render FAQ chips
+function renderFAQChips() {
+  const container = document.getElementById("cb-faq-chips");
+  if (!container || !CONFIG.faqButtons || CONFIG.faqButtons.length === 0) return;
+  container.innerHTML = "";
+  container.style.display = "flex";
+  CONFIG.faqButtons.forEach(label => {
+    const btn = document.createElement("button");
+    btn.innerText = label;
+    btn.style.cssText = `
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid ${CONFIG.primaryColor}44;
+      background: ${CONFIG.primaryColor}12;
+      color: ${CONFIG.primaryColor};
+      transition: all 0.2s;
+      white-space: nowrap;
+    `;
+    btn.onmouseover = () => {
+      btn.style.background = CONFIG.primaryColor;
+      btn.style.color = "white";
+    };
+    btn.onmouseleave = () => {
+      btn.style.background = `${CONFIG.primaryColor}12`;
+      btn.style.color = CONFIG.primaryColor;
+    };
+    btn.addEventListener("click", () => {
+      // Hide chips after click
+      container.style.display = "none";
+      // Send as message
+      const input = document.getElementById("cb-input");
+      input.value = label;
+      sendMessage();
+      playSound("click");
+    });
+    container.appendChild(btn);
+  });
+}
+
 bubble.addEventListener("click", () => {
     isOpen = !isOpen;
     win.classList.toggle("open", isOpen);
     bubble.classList.toggle("open", isOpen);
     playSound("open");
-if (isOpen && document.getElementById("cb-messages").children.length === 0) {
+    if (isOpen && document.getElementById("cb-messages").children.length === 0) {
       if (steps.length > 0 && !leadCaptured) {
         setTimeout(() => addMessage(stepQuestions[steps[0]], "bot"), 300);
       } else {
-        setTimeout(() => addMessage(CONFIG.welcomeMessage, "bot"), 300);
+        setTimeout(() => {
+          addMessage(CONFIG.welcomeMessage, "bot");
+          setTimeout(() => renderFAQChips(), 400);
+        }, 300);
       }
     }
   });
