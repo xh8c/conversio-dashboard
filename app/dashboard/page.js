@@ -283,6 +283,7 @@ function Overview({ userId }) {
 function Leads({ userId }) {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -294,6 +295,12 @@ function Leads({ userId }) {
     load();
   }, [userId]);
 
+  function urgencyColor(u) {
+    if (u === "high") return "text-red-400 border-red-500/20 bg-red-500/5";
+    if (u === "medium") return "text-yellow-400 border-yellow-500/20 bg-yellow-500/5";
+    return "text-white/30 border-white/10 bg-white/5";
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -304,7 +311,9 @@ function Leads({ userId }) {
         {leads.length > 0 && (
           <button
             onClick={() => {
-              const csv = ["Name,Email,Date", ...leads.map(l => `${l.name || ""},${l.email || ""},${new Date(l.created_at).toLocaleDateString()}`)].join("\n");
+              const csv = ["Name,Email,Intent,Budget,Timeline,Urgency,Date",
+                ...leads.map(l => `${l.name||""},${l.email||""},${l.intent||""},${l.budget||""},${l.timeline||""},${l.urgency||""},${new Date(l.created_at).toLocaleDateString()}`)
+              ].join("\n");
               const a = document.createElement("a");
               a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
               a.download = "leads.csv"; a.click();
@@ -317,25 +326,77 @@ function Leads({ userId }) {
         )}
       </div>
 
-      <div className="card-hover rounded-2xl overflow-hidden" style={{ background: "#0a0a0a" }}>
-        <div className="grid grid-cols-3 px-6 py-3 border-b border-white/[0.05]">
-          {["Name", "Email", "Date"].map(h => (
-            <span key={h} className="text-white/20 text-xs font-mono uppercase tracking-widest">{h}</span>
-          ))}
-        </div>
+      <div className="flex flex-col gap-3">
         {loading ? (
           <div className="py-16 flex justify-center">
             <div className="w-5 h-5 border border-white/20 rounded-full animate-spin border-t-white"></div>
           </div>
         ) : leads.length === 0 ? (
-          <div className="py-16 text-center">
+          <div className="card-hover rounded-2xl py-16 text-center" style={{ background: "#0a0a0a" }}>
             <p className="text-white/15 text-sm font-mono">No leads yet</p>
           </div>
-        ) : leads.map((lead, i) => (
-          <div key={lead.id} className="grid grid-cols-3 px-6 py-4 border-b border-white/[0.03] last:border-0 hover:bg-white/[0.02] transition-colors" style={{ animationDelay: `${i * 30}ms` }}>
-            <span className="text-white/80 text-sm">{lead.name || "—"}</span>
-            <span className="text-white/40 text-sm font-mono">{lead.email || "—"}</span>
-            <span className="text-white/20 text-xs font-mono self-center">{new Date(lead.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+        ) : leads.map((lead) => (
+          <div key={lead.id} className="card-hover rounded-2xl overflow-hidden" style={{ background: "#0a0a0a" }}>
+            {/* Lead header */}
+            <div
+              className="px-6 py-4 flex items-center justify-between cursor-pointer"
+              onClick={() => setExpanded(expanded === lead.id ? null : lead.id)}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white/50 text-xs font-bold">{(lead.name || "?")[0].toUpperCase()}</span>
+                </div>
+                <div>
+                  <p className="text-white text-sm font-medium">{lead.name || "—"}</p>
+                  <p className="text-white/30 text-xs font-mono">{lead.email || "—"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {lead.urgency && (
+                  <span className={`text-xs font-mono px-2.5 py-1 rounded-lg border ${urgencyColor(lead.urgency)}`}>
+                    {lead.urgency}
+                  </span>
+                )}
+                <span className="text-white/20 text-xs font-mono">
+                  {new Date(lead.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className={`text-white/20 transition-transform ${expanded === lead.id ? "rotate-180" : ""}`}>
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Expanded details */}
+            {expanded === lead.id && (
+              <div className="px-6 pb-5 border-t border-white/[0.04]">
+                <div className="grid grid-cols-3 gap-4 mt-4 mb-4">
+                  {[
+                    { label: "Intent", value: lead.intent },
+                    { label: "Budget", value: lead.budget },
+                    { label: "Timeline", value: lead.timeline },
+                  ].map(f => (
+                    <div key={f.label} className="rounded-xl p-3" style={{ background: "#050505", border: "1px solid rgba(255,255,255,0.04)" }}>
+                      <p className="text-white/20 text-xs font-mono uppercase tracking-widest mb-1">{f.label}</p>
+                      <p className="text-white/70 text-sm">{f.value || "—"}</p>
+                    </div>
+                  ))}
+                </div>
+                {lead.conversation && (
+                  <div>
+                    <p className="text-white/20 text-xs font-mono uppercase tracking-widest mb-2">Conversation</p>
+                    <div className="rounded-xl p-4 max-h-48 overflow-y-auto flex flex-col gap-2" style={{ background: "#050505", border: "1px solid rgba(255,255,255,0.04)" }}>
+                      {JSON.parse(lead.conversation).map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                          <div className={`px-3 py-2 rounded-xl text-xs max-w-xs ${msg.role === "user" ? "bg-white/10 text-white/70" : "bg-white/5 text-white/50"}`}>
+                            {msg.content}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
