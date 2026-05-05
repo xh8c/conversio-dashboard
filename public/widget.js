@@ -474,6 +474,10 @@ function addTyping() {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function removeTyping() {
+  document.getElementById("cb-typing-row")?.remove();
+}
+
 // Conversational lead capture state
   let leadStep = 0; // 0=not started, 1=asking name, 2=asking email, 3=done
 
