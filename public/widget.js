@@ -611,6 +611,19 @@ if (currentStep === "name") {
       playSound("receive");
       conversationHistory.push({ role: "assistant", content: data.answer });
 
+      // Update lead with latest conversation and extracted data
+      if (leadCaptured && leadData.email) {
+        fetch(`${CONFIG.apiUrl}/update-lead`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: CONFIG.userId,
+            email: leadData.email,
+            conversation_history: conversationHistory,
+          }),
+        }).catch(() => {});
+      }
+
     } catch {
       removeTyping();
       addMessage("Something went wrong. Please try again.", "bot");
