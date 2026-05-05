@@ -582,34 +582,35 @@ if (currentStep === "name") {
     }
 
     // Normal chat
-// Add to history before sending
-// Add to history before sending
-conversationHistory.push({ role: "user", content: question });
+    conversationHistory.push({ role: "user", content: question });
+    addTyping();
+    const typingStart = Date.now();
 
-try {
-const res = await fetch(`${CONFIG.apiUrl}/chat`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    user_id: CONFIG.userId,
-    question,
-    bot_name: CONFIG.botName,
-    fallback_message: CONFIG.fallbackMessage,
-    conversation_history: conversationHistory,
-  }),
-});
-const data = await res.json();
-removeTyping();
-addMessage(data.answer, "bot");
-playSound("receive");
+    try {
+      const res = await fetch(`${CONFIG.apiUrl}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: CONFIG.userId,
+          question,
+          bot_name: CONFIG.botName,
+          fallback_message: CONFIG.fallbackMessage,
+          conversation_history: conversationHistory,
+        }),
+      });
+      const data = await res.json();
 
-// Add bot response to history
-conversationHistory.push({ role: "assistant", content: data.answer });
+      const elapsed = Date.now() - typingStart;
+      const minTypingTime = 800;
+      if (elapsed < minTypingTime) {
+        await new Promise(r => setTimeout(r, minTypingTime - elapsed));
+      }
 
-// Update extracted data silently
-if (data.extracted) {
-  extractedData = { ...extractedData, ...data.extracted };
-}
+      removeTyping();
+      addMessage(data.answer, "bot");
+      playSound("receive");
+      conversationHistory.push({ role: "assistant", content: data.answer });
+
     } catch {
       removeTyping();
       addMessage("Something went wrong. Please try again.", "bot");
