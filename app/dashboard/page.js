@@ -379,16 +379,39 @@ function Chatbot({ userId, theme }) {
     if (!url) return;
     setLoading(true); setStatus(null);
     try {
-      const res = await fetch(`${RAILWAY_URL}/train`, {
+      await fetch(`${RAILWAY_URL}/train`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, url }),
       });
-      const data = await res.json();
-      setStatus({ success: true, msg: data.pages_scraped ? `Scraped ${data.pages_scraped} pages — ${data.chunks_stored} chunks stored` : "Training complete!" });
+      setStatus({ success: true, msg: "Training started — checking progress..." });
+
+      const poll = setInterval(async () => {
+        try {
+          const res = await fetch(`${RAILWAY_URL}/settings/${userId}`);
+          const data = await res.json();
+          if (data.trainingStatus === "complete") {
+            clearInterval(poll);
+            setStatus({ success: true, msg: "Training complete! Your chatbot is ready." });
+            setLoading(false);
+          } else if (data.trainingStatus === "error") {
+            clearInterval(poll);
+            setStatus({ success: false, msg: "Training failed. Please try again." });
+            setLoading(false);
+          } else {
+            setStatus({ success: true, msg: "Training in progress..." });
+          }
+        } catch {}
+      }, 5000);
+
+      setTimeout(() => {
+        clearInterval(poll);
+        setLoading(false);
+      }, 600000);
+
     } catch {
       setStatus({ success: false, msg: "Backend unreachable." });
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const scriptTag = `<script>
